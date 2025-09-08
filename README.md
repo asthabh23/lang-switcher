@@ -1,43 +1,119 @@
-# Your Project's Title...
-Your project's description...
+# Smart Language Switcher for AEM Edge Delivery Services
+
+A multilingual website implementation with intelligent URL mapping between English and French languages using AEM Edge Delivery Services.
+
+## Features
+
+- **Automatic Language Detection**: Detects current language from URL path
+- **Intelligent URL Mapping**: Maps pages between languages using placeholders.json configuration
+- **Seamless Navigation**: One-click language switching in the header
+- **Fallback Support**: Graceful fallbacks when mappings are unavailable
+- **Homepage Handling**: Special handling for homepage language switching (`/` ↔ `/fr`)
 
 ## Environments
-- Preview: https://main--{repo}--{owner}.aem.page/
-- Live: https://main--{repo}--{owner}.aem.live/
-- Block Library: https://main--{repo}--{owner}.aem.page/tools/sidekick/library.html?plugin=blocks
+- Preview: https://main--lang-switcher--asthabh23.aem.page/
+- Live: https://main--lang-switcher--asthabh23.aem.live/
 
-## Documentation
+## Language Switcher Configuration
 
-Before using the aem-boilerplate, we recommand you to go through the documentation on [www.aem.live](https://www.aem.live/docs/) and [experienceleague.adobe.com](https://experienceleague.adobe.com/en/docs/experience-manager-cloud-service/content/edge-delivery/wysiwyg-authoring/authoring), more specifically:
-1. [Getting Started](https://experienceleague.adobe.com/en/docs/experience-manager-cloud-service/content/edge-delivery/wysiwyg-authoring/edge-dev-getting-started), [Creating Blocks](https://experienceleague.adobe.com/en/docs/experience-manager-cloud-service/content/edge-delivery/wysiwyg-authoring/create-block), [Content Modelling](https://experienceleague.adobe.com/en/docs/experience-manager-cloud-service/content/edge-delivery/wysiwyg-authoring/content-modeling)
-2. [The Anatomy of a Project](https://www.aem.live/developer/anatomy-of-a-project)
-3. [Web Performance](https://www.aem.live/developer/keeping-it-100)
-4. [Markup, Sections, Blocks, and Auto Blocking](https://www.aem.live/developer/markup-sections-blocks)
+### URL Structure
+- **English (default)**: `/` or `/page-path`
+- **French**: `/fr` or `/fr/page-path`
 
-Furthremore, we encourage you to watch the recordings of any of our previous presentations or sessions:
-- [Getting started with AEM Authoring and Edge Delivery Services](https://experienceleague.adobe.com/en/docs/events/experience-manager-gems-recordings/gems2024/aem-authoring-and-edge-delivery)
+### Placeholders JSON Setup
 
-## Prerequisites
+Create a `placeholders.json` file with a `language-switcher` sheet to map URLs between languages:
 
-- nodejs 18.3.x or newer
-- AEM Cloud Service release 2024.8 or newer (>= `17465`)
-
-## Installation
-
-```sh
-npm i
+```json
+{
+  "data": [
+    {
+      "en": "",
+      "fr": ""
+    },
+    {
+      "en": "about",
+      "fr": "a-propos"
+    },
+    {
+      "en": "services/consulting",
+      "fr": "services/consultation"
+    },
+    {
+      "en": "contact",
+      "fr": "contact"
+    }
+  ]
+}
 ```
 
-## Linting
+### How URL Mapping Works
 
-```sh
-npm run lint
+1. **Current page detection**: Extracts the current language and page path
+2. **Mapping lookup**: Searches placeholders.json for the current page mapping
+3. **Target URL construction**: Builds the target language URL using the mapped path
+4. **Fallback handling**: Uses standard language prefix pattern if no mapping found
+
+Example mappings:
+- `/about` → `/fr/a-propos`
+- `/services/consulting` → `/fr/services/consultation`
+- `/fr/contact` → `/contact`
+- `/` → `/fr` (homepage special case)
+
+## Implementation Details
+
+### Header Integration
+
+The language switcher is automatically integrated into the header navigation by detecting clickable elements in the nav-tools section and attaching event listeners. The implementation can be found in [`blocks/header/header.js`](blocks/header/header.js) - look for the "Initialize language switcher" section.
+
+### Language Detection
+
+The system automatically detects the current language from the URL path using the `getLanguage()` function. This logic is implemented in [`scripts/scripts.js`](scripts/scripts.js) and handles the URL parsing and language detection.
+
+### URL Mapping Logic
+
+The core language switching functionality is implemented in [`scripts/language-switcher.js`](scripts/language-switcher.js):
+
+1. **Fetch mappings** from `placeholders.json?sheet=language-switcher` - see `fetchLanguageMappings()`
+2. **Find current page** mapping by matching the current language URL - see `findMappedUrl()`
+3. **Switch to target** language using mapped URL or fallback pattern - see `switchToLanguage()` and `switchLanguage()`
+
+## Usage
+
+### Adding the Language Switcher UI (can be extended for more languages as needed)
+
+Add a clickable element in your navigation (typically in nav-tools section):
+
+```html
+<p>EN | FR</p>
 ```
 
-## Local development
+The JavaScript will automatically detect this element and make it clickable.
 
-1. Create a new repository based on the `aem-boilerplate` template and add a mountpoint in the `fstab.yaml`
-1. Add the [AEM Code Sync GitHub App](https://github.com/apps/aem-code-sync) to the repository
-1. Install the [AEM CLI](https://github.com/adobe/helix-cli): `npm install -g @adobe/aem-cli`
-1. Start AEM Proxy: `aem up` (opens your browser at `http://localhost:3000`)
-1. Open the `{repo}` directory in your favorite IDE and start coding :)
+### Creating Language Mappings
+
+1. Create or update `placeholders.json` in your site root (at content level)
+2. Add entries to map between English and French URLs
+3. Use empty strings for homepage mapping
+4. Preview/publish changes to see them take effect
+
+### Supported Languages
+
+- `en` (English) - Default language
+- `fr` (French) - Secondary language
+
+## File Structure
+
+```
+├── blocks/header/header.js          # Language switcher integration
+├── scripts/language-switcher.js     # Core language switching logic
+├── scripts/scripts.js              # Language detection utilities
+└── README.md                       
+```
+
+## Troubleshooting
+
+- **Language switcher not working**: Check that nav-tools contains a `<p>` element
+- **Incorrect redirects**: Verify placeholders.json mapping configuration
+- **404 errors**: Ensure target language pages exist at mapped URLs
+- **Fallback not working**: Check that both languages are defined in LANGUAGES constant
