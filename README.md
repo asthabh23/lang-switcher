@@ -14,38 +14,17 @@ A multilingual website implementation with intelligent URL mapping between Engli
 - Preview: https://main--lang-switcher--asthabh23.aem.page/
 - Live: https://main--lang-switcher--asthabh23.aem.live/
 
+
 ## Language Switcher Configuration
 
 ### URL Structure
-- **English (default)**: `/` or `/page-path`
+- **English (default)**: `/` or `/en/page-path`
 - **French**: `/fr` or `/fr/page-path`
 
-### Placeholders JSON Setup
+### Placeholders Setup
 
-Create a `placeholders.json` file with a `language-switcher` sheet to map URLs between languages:
+Create a `placeholders` sheet at the root of your content with a `language-switcher` tab consisting of URL mappings between languages as:
 
-```json
-{
-  "data": [
-    {
-      "en": "",
-      "fr": ""
-    },
-    {
-      "en": "about",
-      "fr": "a-propos"
-    },
-    {
-      "en": "services/consulting",
-      "fr": "services/consultation"
-    },
-    {
-      "en": "contact",
-      "fr": "contact"
-    }
-  ]
-}
-```
 
 ### How URL Mapping Works
 
@@ -55,9 +34,9 @@ Create a `placeholders.json` file with a `language-switcher` sheet to map URLs b
 4. **Fallback handling**: Uses standard language prefix pattern if no mapping found
 
 Example mappings:
-- `/about` → `/fr/a-propos`
-- `/services/consulting` → `/fr/services/consultation`
-- `/fr/contact` → `/contact`
+- `/en/example-content` → `/fr/contenu-d-example`
+- `/en/getting-started/guide` → `/fr/prise-en-main/guide-rapide`
+- `/en//getting-started/documentation` → `/fr/prise-en-main/documentation`
 - `/` → `/fr` (homepage special case)
 
 ## Implementation Details
@@ -81,6 +60,8 @@ The core language switching functionality is implemented in [`scripts/language-s
 ## Usage
 
 ### Adding the Language Switcher UI (can be extended for more languages as needed)
+
+The language switcher is located in the **header of the site** and appears as a **blue highlighted clickable element**.
 
 Add a clickable element in your navigation (typically in nav-tools section):
 
