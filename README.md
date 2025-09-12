@@ -59,17 +59,10 @@ The core language switching functionality is implemented in [`scripts/language-s
 
 ## Usage
 
-### Adding the Language Switcher UI (can be extended for more languages as needed)
+### Adding the Language Switcher on the header of the site for easy access (can be extended for more languages as needed)
 
 The language switcher is located in the **header of the site** and appears as a **blue highlighted clickable element**.
 
-Add a clickable element in your navigation (typically in nav-tools section):
-
-```html
-<p>EN | FR</p>
-```
-
-The JavaScript will automatically detect this element and make it clickable.
 
 ### Creating Language Mappings
 
